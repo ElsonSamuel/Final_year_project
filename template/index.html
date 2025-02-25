@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Section</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #1a1a2e;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+          
+    .comment-section {
+      text-align: center;
+      width: 50%;
+      max-width: 500px;
+      background: #16213e;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      margin: 0 auto; /* Center the section horizontally */
+  }
+  
+  .comment-section h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+  }
+  
+  .description {
+      font-size: 14px;
+      color: #b2becd;
+      margin-bottom: 20px;
+  }
+  
+  form {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Center elements horizontally */
+      gap: 10px;
+  }
+  
+  /* Centering input */
+  textarea {
+      width: 100%;
+      max-width: 400px;
+      padding: 10px;
+      border: 1px solid #57606f;
+      border-radius: 5px;
+      outline: none;
+      background: #0f3460;
+      color: white;
+      text-align: center; /* Center text inside input */
+  }
+  
+  /* Centering button */
+  button {
+      background-color: #007bff;
+      color: white;
+      width: 100%;
+      max-width: 200px;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+      text-align: center;
+  }
+  
+  button:hover {
+      background-color: #0056b3;
+  }
+  
+
+          
+          #commentsContainer {
+            margin-top: 20px;
+          }
+          
+          .comment {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #57606f;
+            border-radius: 4px;
+            background: #0f3460;
+          }
+          
+    </style>
+</head>
+<body>
+    <div class="comment-section">
+      <h2>✨ Sentiment Analysis</h2>
+      <p class="description">
+        Type in a comment and see if it expresses positivity or negativity!
+      </p>
+        <form method="/" action="POST" id="commentForm">
+          <textarea id="commentInput" placeholder="Write a comment..." required></textarea>
+          <button type="submit">Post Comment</button>
+        </form>
+
+        <div id="commentsContainer">
+        </div>
+        
+    </div>
+
+      <script>
+        document.getElementById('commentForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+    
+            const commentInput = document.getElementById('commentInput');
+            const commentsContainer = document.getElementById('commentsContainer');
+    
+            const commentText = commentInput.value.trim();
+            if (!commentText) return;
+    
+            try {
+                const response = await fetch('/process_comment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ comment: commentText })
+                });
+    
+                const result = await response.json();
+    
+                if (response.ok) {
+                    const commentElement = document.createElement('div');
+                    commentElement.classList.add('comment');
+                    commentElement.textContent = `${result.comment} (Sentiment: ${result.sentiment})`;
+                    commentsContainer.appendChild(commentElement);
+                    commentInput.value = '';
+                } else {
+                    alert(result.error || 'An error occurred.');
+                }
+            } catch (err) {
+                alert('Failed to connect to the server.');
+            }
+        });
+    </script>
+    
+</body>
+</html>
